@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+    <style>
+        /* Style for the comment form */
+        form {
+          margin-bottom: 20px;
+        }
+      
+        label {
+          display: block;
+          margin-bottom: 5px;
+          font-weight: bold;
+        }
+      
+        input[type="text"],
+        textarea {
+          width: 100%;
+          padding: 10px;
+          margin-bottom: 10px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+          font-size: 16px;
+        }
+      
+        input[type="submit"] {
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          padding: 10px;
+          cursor: pointer;
+        }
+      
+        /* Style for the comments list */
+        #comments-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+      
+        #comments-list li {
+          margin-bottom: 10px;
+          padding: 10px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+        }
+      
+        #comments-list li strong {
+          font-weight: bold;
+          margin-right: 10px;
+        }
+      </style>
+      
+
+
+
+
+
+
+
+
+
+
+
+  <title>My Firebase Comment Section</title>
+  <!-- Add the Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-database.js"></script>
+
+
+
+  <script>
+    // Initialize Firebase with your project configuration
+    const firebaseConfig = {
+  apiKey: "AIzaSyDFaei1sNTGfWfFx3qVYsRXBHnMP3Iy3zY",
+  authDomain: "kcommentsection.firebaseapp.com",
+  databaseURL: "https://kcommentsection-default-rtdb.firebaseio.com",
+  projectId: "kcommentsection",
+  storageBucket: "kcommentsection.appspot.com",
+  messagingSenderId: "1026489467663",
+  appId: "1:1026489467663:web:c9dc464fcaaf96dedb347a",
+  measurementId: "G-LSY8ZMR6CL"
+};
+    firebase.initializeApp(firebaseConfig);
+
+    // Get a reference to the database service
+    var database = firebase.database();
+
+    // Define a function to submit a new comment to Firebase
+    function submitComment() {
+      var name = document.getElementById("name").value;
+      var comment = document.getElementById("comment").value;
+
+      // Get a reference to the comments collection in Firebase
+      var commentsRef = database.ref("comments");
+
+      // Push a new comment object to the collection
+      commentsRef.push({
+        name: name,
+        comment: comment,
+        timestamp: Date.now()
+      });
+    }
+
+    // Define a function to display the comments from Firebase
+    function displayComments() {
+      var commentsRef = database.ref("comments");
+
+      commentsRef.on("value", function(snapshot) {
+        var commentsList = document.getElementById("comments-list");
+        commentsList.innerHTML = "";
+
+        snapshot.forEach(function(childSnapshot) {
+          var commentData = childSnapshot.val();
+
+          var name = commentData.name;
+          var comment = commentData.comment;
+          var timestamp = commentData.timestamp;
+
+          // Create a new list item for the comment
+          var commentListItem = document.createElement("li");
+          commentListItem.innerHTML = "<strong>" + name + ":</strong> " + comment;
+
+          // Add the comment to the list
+          commentsList.appendChild(commentListItem);
+        });
+      });
+    }
+  </script>
+
+
+
+</head>
+<body onload="displayComments()">
+  <h1>My Firebase Comment Section</h1>
+
+  <!-- Comment form -->
+  <form onsubmit="submitComment(); return false;">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name"><br>
+
+    <label for="comment">Comment:</label>
+    <textarea id="comment" name="comment"></textarea><br>
+
+    <input type="submit" value="Submit">
+  </form>
+
+  <!-- List of comments -->
+  <ul id="comments-list"></ul>
+</body>
+</html>
